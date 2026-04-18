@@ -2,9 +2,6 @@ import { NextResponse } from 'next/server'
 import { bulkDeleteSlots, bulkUpdateSlots } from '@/lib/db.js'
 import { requireAdmin } from '@/lib/auth.js'
 
-// POST /api/slots/bulk
-// { action: 'delete', ids: [...] }
-// { action: 'update', ids: [...], event_id?, max_bookings? }
 export async function POST(request) {
   const deny = requireAdmin(request)
   if (deny) return deny
@@ -16,7 +13,7 @@ export async function POST(request) {
 
   if (action === 'delete') {
     try {
-      bulkDeleteSlots(ids)
+      await bulkDeleteSlots(ids)
       return NextResponse.json({ deleted: ids.length })
     } catch (e) {
       console.error('bulk delete:', e)
@@ -26,7 +23,7 @@ export async function POST(request) {
 
   if (action === 'update') {
     try {
-      bulkUpdateSlots(ids, fields)
+      await bulkUpdateSlots(ids, fields)
       return NextResponse.json({ updated: ids.length })
     } catch (e) {
       console.error('bulk update:', e)

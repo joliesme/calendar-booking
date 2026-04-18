@@ -4,7 +4,7 @@ import { requireAdmin } from '@/lib/auth.js'
 
 export async function GET(_, { params }) {
   const { id } = await params
-  const slot = getSlotById(id)
+  const slot = await getSlotById(id)
   if (!slot) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   return NextResponse.json(slot)
 }
@@ -15,7 +15,7 @@ export async function PATCH(request, { params }) {
   const { id } = await params
   try {
     const body = await request.json()
-    const slot = updateSlot(id, body)
+    const slot = await updateSlot(id, body)
     return NextResponse.json(slot)
   } catch (e) {
     console.error('PATCH /api/slots/[id]:', e)
@@ -28,7 +28,7 @@ export async function DELETE(request, { params }) {
   if (deny) return deny
   const { id } = await params
   try {
-    deleteSlot(id)
+    await deleteSlot(id)
     return new NextResponse(null, { status: 204 })
   } catch (e) {
     console.error('DELETE /api/slots/[id]:', e)
