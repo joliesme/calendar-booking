@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  body { @apply bg-sage-100 text-gray-900; }
+}
+
+@layer components {
+  /* ── Buttons ────────────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-medium text-sm
+           transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+  .btn-primary {
+    @apply btn bg-coral-500 text-white hover:bg-coral-600 focus:ring-coral-400 shadow-sm;
+  }
+  .btn-secondary {
+    @apply btn bg-white text-gray-700 border border-sage-200 hover:bg-sage-50 focus:ring-sage-400;
+  }
+  .btn-danger {
+    @apply btn bg-coral-500 text-white hover:bg-coral-600 focus:ring-coral-400;
+  }
+  .btn-sm {
+    @apply px-3.5 py-1.5 text-xs;
+  }
+
+  /* ── Cards ──────────────────────────────────────── */
+  .card {
+    @apply bg-white rounded-2xl shadow-card border border-sage-100 p-6;
+  }
+
+  /* ── Form inputs ─────────────────────────────────── */
+  .input {
+    @apply w-full rounded-xl border border-sage-200 bg-sage-50 px-3.5 py-2.5 text-sm
+           focus:outline-none focus:ring-2 focus:ring-coral-400 focus:border-transparent
+           placeholder:text-gray-400 transition-colors;
+  }
+  .label {
+    @apply block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5;
+  }
+
+  /* ── Badges ──────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-green  { @apply badge bg-lime-100 text-lime-600; }
+  .badge-red    { @apply badge bg-coral-100 text-coral-600; }
+  .badge-yellow { @apply badge bg-amber-100 text-amber-700; }
+  .badge-sage   { @apply badge bg-sage-100 text-sage-700; }
+}
