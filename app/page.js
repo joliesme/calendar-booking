@@ -78,32 +78,73 @@ function groupByDate(slots) {
   return groups
 }
 
-// ── Ad Banner ────────────────────────────────────────────
+// ── Ad Lightbox ──────────────────────────────────────────
 
-function AdBanner({ ad }) {
+function AdLightbox({ ad, onClose }) {
   if (!ad) return null
-  const inner = (
-    <div className="flex items-center gap-3 p-3.5 bg-white rounded-2xl shadow-card
-                    border border-sage-100 hover:shadow-card-hover transition-shadow">
-      {ad.image_url && (
-        <img src={ad.image_url} alt={ad.title}
-             className="w-12 h-12 object-cover rounded-xl flex-shrink-0" />
-      )}
-      <div className="min-w-0">
-        <p className="text-[9px] uppercase tracking-widest text-sage-500 font-bold mb-0.5">{ad.label || 'Sponsored'}</p>
-        <p className="font-semibold text-sm text-gray-800 truncate leading-tight">{ad.title}</p>
-        {ad.description && (
-          <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">{ad.description}</p>
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl shadow-xl max-w-sm w-full overflow-hidden"
+        onClick={e => e.stopPropagation()}
+      >
+        {ad.image_url && (
+          <img src={ad.image_url} alt={ad.title} className="w-full h-48 object-cover" />
         )}
+        <div className="p-5">
+          <p className="text-[9px] uppercase tracking-widest text-sage-500 font-bold mb-1">{ad.label || 'Sponsored'}</p>
+          <p className="font-bold text-gray-900 text-base leading-snug mb-2">{ad.title}</p>
+          {ad.description && (
+            <p className="text-sm text-gray-500 leading-relaxed">{ad.description}</p>
+          )}
+          <div className="flex gap-3 mt-4">
+            {ad.link_url && (
+              <a href={ad.link_url} target="_blank" rel="noopener noreferrer"
+                className="btn-primary text-sm flex-1 text-center">
+                Learn more →
+              </a>
+            )}
+            <button onClick={onClose}
+              className="btn-secondary text-sm px-4">
+              Close
+            </button>
+          </div>
+        </div>
       </div>
-      {ad.link_url && (
-        <span className="ml-auto text-coral-500 text-xs font-semibold flex-shrink-0">→</span>
-      )}
     </div>
   )
-  return ad.link_url
-    ? <a href={ad.link_url} target="_blank" rel="noopener noreferrer" className="block">{inner}</a>
-    : inner
+}
+
+// ── Ad Banner ────────────────────────────────────────────
+
+function AdBanner({ ad, onExpand }) {
+  if (!ad) return null
+  return (
+    <button
+      type="button"
+      onClick={() => onExpand(ad)}
+      className="w-full text-left block"
+    >
+      <div className="flex items-center gap-3 p-3.5 bg-white rounded-2xl shadow-card
+                      border border-sage-100 hover:shadow-card-hover transition-shadow">
+        {ad.image_url && (
+          <img src={ad.image_url} alt={ad.title}
+               className="w-12 h-12 object-cover rounded-xl flex-shrink-0" />
+        )}
+        <div className="min-w-0">
+          <p className="text-[9px] uppercase tracking-widest text-sage-500 font-bold mb-0.5">{ad.label || 'Sponsored'}</p>
+          <p className="font-semibold text-sm text-gray-800 truncate leading-tight">{ad.title}</p>
+          {ad.description && (
+            <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">{ad.description}</p>
+          )}
+        </div>
+        <span className="ml-auto text-coral-500 text-xs font-semibold flex-shrink-0">↗</span>
+      </div>
+    </button>
+  )
 }
 
 // ── Step Pills ───────────────────────────────────────────
@@ -160,6 +201,9 @@ export default function HomePage() {
   const [form, setForm]       = useState({ name: '', email: '', phone: '' })
   const [answers, setAnswers] = useState({})
   const [duplicateBooking, setDuplicateBooking] = useState(null)
+
+  // Find my booking
+  const [lightboxAd, setLightboxAd] = useState(null)
 
   // Find my booking
   const [findOpen, setFindOpen]   = useState(false)
@@ -259,6 +303,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-sage-100">
+      <AdLightbox ad={lightboxAd} onClose={() => setLightboxAd(null)} />
 
       {/* ── Header ────────────────────────────────── */}
       <header className="bg-white/80 backdrop-blur-sm border-b border-sage-200 sticky top-0 z-10">
@@ -290,7 +335,7 @@ export default function HomePage() {
         {/* Top ads */}
         {topAds.length > 0 && (
           <div className={`grid gap-2.5 mb-5 ${topAds.length > 1 ? 'sm:grid-cols-2' : 'max-w-lg'}`}>
-            {topAds.map(a => <AdBanner key={a.id} ad={a} />)}
+            {topAds.map(a => <AdBanner key={a.id} ad={a} onExpand={setLightboxAd} />)}
           </div>
         )}
 
@@ -554,7 +599,7 @@ export default function HomePage() {
           {sideAds.length > 0 && (
             <div className="space-y-2.5">
               <p className="text-[10px] font-bold uppercase tracking-widest text-sage-400 px-1">Promoted</p>
-              {sideAds.map(a => <AdBanner key={a.id} ad={a} />)}
+              {sideAds.map(a => <AdBanner key={a.id} ad={a} onExpand={setLightboxAd} />)}
             </div>
           )}
         </div>
@@ -562,7 +607,7 @@ export default function HomePage() {
         {/* Bottom ads */}
         {bottomAds.length > 0 && (
           <div className={`grid gap-2.5 mt-5 ${bottomAds.length > 1 ? 'sm:grid-cols-2 lg:grid-cols-3' : 'max-w-sm'}`}>
-            {bottomAds.map(a => <AdBanner key={a.id} ad={a} />)}
+            {bottomAds.map(a => <AdBanner key={a.id} ad={a} onExpand={setLightboxAd} />)}
           </div>
         )}
 
